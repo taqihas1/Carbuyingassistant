@@ -1,4 +1,4 @@
-name: EAS Build - Human-in-the-Loop Pipeline
+name: team review and Approval before AAB/IPA Build
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-      - run: npm ci
+      - run: npm install --legacy-peer-deps
 
       - name: Build Preview APK
         id: build_preview
@@ -81,12 +81,12 @@ jobs:
 
   # ─────────────────────────────────────────────
   # STEP 2: Wait for Human Approval
-  #   Requires QR scan review before proceeding
+  # Requires QR scan review before proceeding
   # ─────────────────────────────────────────────
   wait-for-approval:
     needs: build-preview
     runs-on: ubuntu-latest
-    environment: production  # ⬅️ PAUSES HERE for manual approval!
+    environment: production # ⬅️ PAUSES HERE for manual approval!
     steps:
       - name: Approval checkpoint
         run: |
@@ -108,7 +108,7 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-      - run: npm ci
+      - run: npm install --legacy-peer-deps
 
       - name: Build Android AAB
         id: build_aab
@@ -171,7 +171,7 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-      - run: npm ci
+      - run: npm install --legacy-peer-deps
 
       - name: Build iOS IPA
         id: build_ipa
