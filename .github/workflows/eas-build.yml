@@ -1,8 +1,9 @@
 name: team review and Approval before AAB/IPA Build
 
 on:
-  push:
-    branches: [main]
+  # DISABLED: push trigger removed — using Codemagic instead of EAS
+  # push:
+  #   branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -11,209 +12,89 @@ permissions:
 
 jobs:
   # ─────────────────────────────────────────────
-  # STEP 1: Build Preview APK + QR Code
+  # DISABLED: EAS Preview Build + QR Code
+  # Now using Codemagic for all builds
   # ─────────────────────────────────────────────
-  build-preview:
+  # build-preview:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #     - uses: expo/expo-github-action@v8
+  #       with:
+  #         eas-version: latest
+  #         token: ${{ secrets.EXPO_TOKEN }}
+  #     - run: npm install --legacy-peer-deps
+  #     - name: Build Preview APK
+  #       run: eas build --platform android --profile preview --non-interactive
+
+  # ─────────────────────────────────────────────
+  # DISABLED: Manual Approval Gate
+  # ─────────────────────────────────────────────
+  # wait-for-approval:
+  #   needs: build-preview
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   steps:
+  #     - name: Approval checkpoint
+  #       run: echo "Approval received"
+
+  # ─────────────────────────────────────────────
+  # DISABLED: EAS Android AAB Build
+  # Using Codemagic instead
+  # ─────────────────────────────────────────────
+  # build-android:
+  #   needs: wait-for-approval
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #     - uses: expo/expo-github-action@v8
+  #       with:
+  #         eas-version: latest
+  #         token: ${{ secrets.EXPO_TOKEN }}
+  #     - run: npm install --legacy-peer-deps
+  #     - name: Build Android AAB
+  #       run: eas build --platform android --profile production --non-interactive
+
+  # ─────────────────────────────────────────────
+  # DISABLED: EAS iOS IPA Build
+  # Using Codemagic instead
+  # ─────────────────────────────────────────────
+  # build-ios:
+  #   needs: wait-for-approval
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #     - uses: expo/expo-github-action@v8
+  #       with:
+  #         eas-version: latest
+  #         token: ${{ secrets.EXPO_TOKEN }}
+  #     - run: npm install --legacy-peer-deps
+  #     - name: Build iOS IPA
+  #       run: eas build --platform ios --profile production --non-interactive
+
+  # ─────────────────────────────────────────────
+  # Placeholder job — workflow needs at least one job
+  # ─────────────────────────────────────────────
+  codemagic-notice:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-      - run: npm install --legacy-peer-deps
-
-      - name: Build Preview APK
-        id: build_preview
+      - name: Codemagic Build Notice
         run: |
-          echo "🔨 Starting Preview Build..."
-          eas build --platform android --profile preview --non-interactive
-          echo "preview_url=$(eas build:list --json --limit 1 | jq -r '.[0].artifacts.buildUrl')" >> $GITHUB_OUTPUT
-
-      - name: Build succeeded - Show QR Code
-        if: success()
-        run: |
-          echo "✅ Preview APK build succeeded!"
+          echo "🔧 Builds now handled by Codemagic CI"
           echo ""
-          echo "📱 QR CODE FOR TESTING:"
-          echo "https://expo.dev/accounts/${{ github.repository_owner }}/projects"
+          echo "To build AAB:"
+          echo "1. Go to https://codemagic.io"
+          echo "2. Select taqihas1/Carbuyingassistant"
+          echo "3. Run 'android-aab-build' workflow"
           echo ""
-          echo "🧪 TEST INSTRUCTIONS:"
-          echo "1. Scan QR code with your phone camera"
-          echo "2. Open in Expo Go"
-          echo "3. Review the app thoroughly"
-          echo "4. If approved → go to Actions tab and approve the 'production' deployment"
-          echo "5. If issues found → fix code, push to main, and pipeline restarts"
-
-      - name: Create GitHub Issue on Preview Failure
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const title = '🟡 Preview Build Failed - Run #' + context.runNumber;
-            const body = '## Preview Build Failure\n\n' +
-              'Repository: ' + context.repo.owner + '/' + context.repo.repo + '\n' +
-              'Branch: ' + context.ref + '\n' +
-              'Commit: ' + context.sha + '\n' +
-              'Workflow Run: [View logs](https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId + ')' + '\n' +
-              'Actor: ' + context.actor + '\n\n' +
-              '### Build Details\n' +
-              '- Platform: Android (Preview/APK)\n' +
-              '- Status: FAILED\n\n' +
-              '### What to Do\n' +
-              '1. Check the error logs in the workflow run above\n' +
-              '2. Fix the code issue\n' +
-              '3. Push the fix to `main` — the pipeline will auto-restart\n\n' +
-              '---\n' +
-              '*This issue was auto-generated by the CI/CD pipeline.*';
-
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: body,
-              labels: ['build-failure', 'preview', 'auto-generated', 'needs-fix']
-            });
-
-  # ─────────────────────────────────────────────
-  # STEP 2: Wait for Human Approval
-  # Requires QR scan review before proceeding
-  # ─────────────────────────────────────────────
-  wait-for-approval:
-    needs: build-preview
-    runs-on: ubuntu-latest
-    environment: production # ⬅️ PAUSES HERE for manual approval!
-    steps:
-      - name: Approval checkpoint
-        run: |
-          echo "✅ Human approval received!"
-          echo "Proceeding to build Production AAB + IPA..."
-
-  # ─────────────────────────────────────────────
-  # STEP 3: Build Android AAB (after approval)
-  # ─────────────────────────────────────────────
-  build-android:
-    needs: wait-for-approval
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-      - run: npm install --legacy-peer-deps
-
-      - name: Build Android AAB
-        id: build_aab
-        run: |
-          echo "🔨 Starting Production AAB Build..."
-          eas build --platform android --profile production --non-interactive
-
-      - name: Build succeeded notification
-        if: success()
-        run: |
-          echo "✅ Android AAB build succeeded!"
-          echo "Download at: https://expo.dev/accounts/${{ github.repository_owner }}/projects"
-          echo "Ready for Google Play Store submission!"
-
-      - name: Create GitHub Issue on AAB Failure
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const title = '🔴 AAB Build Failed - Run #' + context.runNumber;
-            const body = '## Production AAB Build Failure\n\n' +
-              'Repository: ' + context.repo.owner + '/' + context.repo.repo + '\n' +
-              'Branch: ' + context.ref + '\n' +
-              'Commit: ' + context.sha + '\n' +
-              'Workflow Run: [View logs](https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId + ')' + '\n' +
-              'Actor: ' + context.actor + '\n\n' +
-              '### Build Details\n' +
-              '- Platform: Android\n' +
-              '- Profile: production (AAB)\n' +
-              '- Status: FAILED after human approval\n\n' +
-              '### What to Do\n' +
-              '1. Check the error logs in the workflow run above\n' +
-              '2. Fix the code issue\n' +
-              '3. Push the fix to `main` — pipeline restarts from Preview\n' +
-              '4. After preview succeeds, re-approve for AAB build\n\n' +
-              '---\n' +
-              '*This issue was auto-generated by the CI/CD pipeline.*';
-
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: body,
-              labels: ['build-failure', 'android', 'auto-generated', 'needs-fix']
-            });
-
-  # ─────────────────────────────────────────────
-  # STEP 4: Build iOS IPA (after approval)
-  # ─────────────────────────────────────────────
-  build-ios:
-    needs: wait-for-approval
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-      - run: npm install --legacy-peer-deps
-
-      - name: Build iOS IPA
-        id: build_ipa
-        run: |
-          echo "🔨 Starting Production IPA Build..."
-          eas build --platform ios --profile production --non-interactive
-
-      - name: Build succeeded notification
-        if: success()
-        run: |
-          echo "✅ iOS IPA build succeeded!"
-          echo "Ready for App Store submission!"
-
-      - name: Create GitHub Issue on IPA Failure
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const title = '🔴 IPA Build Failed - Run #' + context.runNumber;
-            const body = '## Production IPA Build Failure\n\n' +
-              'Repository: ' + context.repo.owner + '/' + context.repo.repo + '\n' +
-              'Branch: ' + context.ref + '\n' +
-              'Commit: ' + context.sha + '\n' +
-              'Workflow Run: [View logs](https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId + ')' + '\n' +
-              'Actor: ' + context.actor + '\n\n' +
-              '### Build Details\n' +
-              '- Platform: iOS\n' +
-              '- Profile: production (IPA)\n' +
-              '- Status: FAILED after human approval\n\n' +
-              '### What to Do\n' +
-              '1. Check the error logs in the workflow run above\n' +
-              '2. Fix the code issue\n' +
-              '3. Push the fix to `main` — pipeline restarts from Preview\n' +
-              '4. After preview succeeds, re-approve for IPA build\n\n' +
-              '---\n' +
-              '*This issue was auto-generated by the CI/CD pipeline.*';
-
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: body,
-              labels: ['build-failure', 'ios', 'auto-generated', 'needs-fix']
-            });
+          echo "This GitHub Actions workflow is disabled."
+          echo "EAS builds and manual approval gates have been removed."

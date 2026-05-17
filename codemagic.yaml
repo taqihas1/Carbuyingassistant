@@ -25,13 +25,7 @@ workflows:
           npx expo prebuild --platform android --clean --non-interactive
       - name: Fix Release Signing Config
         script: |
-          sed -i "s/signingConfig signingConfigs.debug/signingConfig signingConfigs.release/g" android/app/build.gradle
-          sed -i "s|storeFile file('debug.keystore')|storeFile file('release.keystore')|g" android/app/build.gradle
-          sed -i "s|storePassword 'android'|storePassword System.getenv('CM_KEYSTORE_PASSWORD') ?: 'carbuyingassistant'|g" android/app/build.gradle
-          sed -i "s|keyAlias 'androiddebugkey'|keyAlias 'carbuyingassistant'|g" android/app/build.gradle
-          sed -i "s|keyPassword 'android'|keyPassword System.getenv('CM_KEY_PASSWORD') ?: 'carbuyingassistant'|g" android/app/build.gradle
-          echo "--- Signing config patched ---"
-          grep -A5 "signingConfigs" android/app/build.gradle | head -20
+          node scripts/patch-release-signing.js android/app/build.gradle
       - name: Build AAB
         script: |
           cd android && ./gradlew :app:bundleRelease --max-workers=1 --no-daemon
