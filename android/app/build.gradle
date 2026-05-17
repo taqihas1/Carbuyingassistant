@@ -98,6 +98,12 @@ android {
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
     signingConfigs {
+        release {
+            storeFile file('release.keystore')
+            storePassword System.getenv('CM_KEYSTORE_PASSWORD') ?: 'carbuyingassistant'
+            keyAlias 'carbuyingassistant'
+            keyPassword System.getenv('CM_KEY_PASSWORD') ?: 'carbuyingassistant'
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
@@ -112,8 +118,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
-            def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
+            signingConfig signingConfigs.release
             shrinkResources enableShrinkResources.toBoolean()
             minifyEnabled enableMinifyInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"

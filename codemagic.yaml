@@ -6,6 +6,9 @@ workflows:
     environment:
       node: 20
       java: 17
+      vars:
+        CM_KEYSTORE_PASSWORD: carbuyingassistant
+        CM_KEY_PASSWORD: carbuyingassistant
     scripts:
       - name: Install dependencies
         script: |
