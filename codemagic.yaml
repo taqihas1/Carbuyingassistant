@@ -1,0 +1,27 @@
+workflows:
+  android-aab-build:
+    name: Build Android AAB on Codemagic
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      node: 20
+      java: 17
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install --legacy-peer-deps
+      - name: Disable New Architecture
+        script: |
+          mkdir -p android
+          echo "newArchEnabled=false" > android/gradle.properties
+          echo "org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=512m" >> android/gradle.properties
+          echo "org.gradle.parallel=false" >> android/gradle.properties
+          echo "org.gradle.workers.max=1" >> android/gradle.properties
+      - name: Expo Prebuild (Old Architecture)
+        script: |
+          npx expo prebuild --platform android --clean --non-interactive
+      - name: Build AAB
+        script: |
+          cd android && ./gradlew :app:bundleRelease --max-workers=1 --no-daemon
+    artifacts:
+      - android/app/build/outputs/bundle/release/*.aab
