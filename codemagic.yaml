@@ -23,6 +23,17 @@ workflows:
       - name: Expo Prebuild (Old Architecture)
         script: |
           npx expo prebuild --platform android --clean --non-interactive
+      - name: Generate Release Keystore
+        script: |
+          keytool -genkeypair -v \
+            -keystore android/app/release.keystore \
+            -alias carbuyingassistant \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Car Buying Assistant, O=Car Buying Assistant, C=US" \
+            -storepass carbuyingassistant \
+            -keypass carbuyingassistant
+          echo "✅ Keystore generated"
+          ls -la android/app/release.keystore
       - name: Fix Release Signing Config
         script: |
           node scripts/patch-release-signing.js android/app/build.gradle
