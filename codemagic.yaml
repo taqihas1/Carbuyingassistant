@@ -1,44 +1,22 @@
-workflows:
-  android-aab-build:
-    name: Build Android AAB on Codemagic
-    max_build_duration: 120
-    instance_type: mac_mini_m1
-    environment:
-      node: 20
-      java: 17
-      vars:
-        CM_KEYSTORE_PASSWORD: carbuyingassistant
-        CM_KEY_PASSWORD: carbuyingassistant
-    scripts:
-      - name: Install dependencies
-        script: |
-          npm install --legacy-peer-deps
-      - name: Disable New Architecture
-        script: |
-          mkdir -p android
-          echo "newArchEnabled=false" > android/gradle.properties
-          echo "org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=512m" >> android/gradle.properties
-          echo "org.gradle.parallel=false" >> android/gradle.properties
-          echo "org.gradle.workers.max=1" >> android/gradle.properties
-      - name: Expo Prebuild (Old Architecture)
-        script: |
-          npx expo prebuild --platform android --clean --non-interactive
-      - name: Generate Release Keystore
-        script: |
-          keytool -genkeypair -v \
-            -keystore android/app/release.keystore \
-            -alias carbuyingassistant \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=Car Buying Assistant, O=Car Buying Assistant, C=US" \
-            -storepass carbuyingassistant \
-            -keypass carbuyingassistant
-          echo "✅ Keystore generated"
-          ls -la android/app/release.keystore
-      - name: Fix Release Signing Config
-        script: |
-          node scripts/patch-release-signing.js android/app/build.gradle
-      - name: Build AAB
-        script: |
-          cd android && ./gradlew :app:bundleRelease --max-workers=1 --no-daemon
-    artifacts:
-      - android/app/build/outputs/bundle/release/*.aab
+workflow:
+  name: Android Release Build
+  environment:
+    node: 22
+    java: 17
+    android: true
+  scripts:
+    - name: Install dependencies
+      script: npm ci
+    - name: Set up keystore
+      script: |
+        echo "$KEYSTORE_BASE64" | base64 --decode > android/app/release.keystore
+    - name: Build release AAB
+      script: |
+        cd android
+        ./gradlew :app:bundleRelease
+  artifacts:
+    - android/app/build/outputs/bundle/release/*.aab
+  publishing:
+    email:
+      recipients:
+        - taqihas@gmail.com

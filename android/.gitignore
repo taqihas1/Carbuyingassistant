@@ -12,5 +12,8 @@ local.properties
 *.hprof
 .cxx/
 
-# Bundle artifacts
-*.jsbundle
+# Keystore files
+*.keystore
+*.jks
+
+android/.kotlin/
