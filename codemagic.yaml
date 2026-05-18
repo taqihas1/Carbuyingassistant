@@ -1,22 +1,17 @@
-workflow:
-  name: Android Release Build
-  environment:
-    node: 22
-    java: 17
-    android: true
-  scripts:
-    - name: Install dependencies
-      script: npm ci
-    - name: Set up keystore
-      script: |
-        echo "$KEYSTORE_BASE64" | base64 --decode > android/app/release.keystore
-    - name: Build release AAB
-      script: |
-        cd android
-        ./gradlew :app:bundleRelease
-  artifacts:
-    - android/app/build/outputs/bundle/release/*.aab
-  publishing:
-    email:
-      recipients:
-        - taqihas@gmail.com
+workflows:
+  android-release:
+    name: Android Release Build
+    environment:
+      java: 17
+      node: 22
+    scripts:
+      - name: Install dependencies
+        script: npm ci
+      - name: Build release AAB
+        script: cd android && ./gradlew :app:bundleRelease
+    artifacts:
+      - android/app/build/outputs/bundle/release/*.aab
+    publishing:
+      email:
+        recipients:
+          - taqihas@gmail.com

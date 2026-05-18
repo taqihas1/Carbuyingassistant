@@ -99,10 +99,12 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file('release.keystore')
-            storePassword System.getenv('KEYSTORE_PASSWORD') ?: 'carbuyingassistant2026'
-            keyAlias System.getenv('KEY_ALIAS') ?: 'carbuyingassistant'
-            keyPassword System.getenv('KEY_PASSWORD') ?: 'carbuyingassistant2026'
+            // Codemagic UI sets CM_ prefixed variables when keystore uploaded via web UI
+            def keystorePath = System.getenv('CM_KEYSTORE_PATH') ?: 'release.keystore'
+            storeFile file(keystorePath)
+            storePassword System.getenv('CM_KEYSTORE_PASSWORD') ?: System.getenv('KEYSTORE_PASSWORD') ?: 'carbuyingassistant2026'
+            keyAlias System.getenv('CM_KEY_ALIAS') ?: System.getenv('KEY_ALIAS') ?: 'carbuyingassistant'
+            keyPassword System.getenv('CM_KEY_PASSWORD') ?: System.getenv('KEY_PASSWORD') ?: 'carbuyingassistant2026'
         }
         debug {
             storeFile file('debug.keystore')
