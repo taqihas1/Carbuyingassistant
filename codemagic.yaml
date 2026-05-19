@@ -26,9 +26,10 @@ workflows:
         script: |
           npx expo prebuild --platform android --no-install
 
-      - name: Patch Release Signing
+      - name: Patch Android Release Files
         script: |
           node scripts/patch-release-signing.js android/app/build.gradle
+          node scripts/patch-android-release.js
 
       - name: Build Release AAB
         script: |
