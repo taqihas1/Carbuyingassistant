@@ -69,7 +69,7 @@ jobs:
       # ── Configure preview signing ──
       - name: Configure preview signing
         env:
-          CM_KEYSTORE_PATH: android/app/preview.keystore
+          CM_KEYSTORE_PATH: preview.keystore
           CM_KEYSTORE_PASSWORD: preview
           CM_KEY_ALIAS: preview
           CM_KEY_PASSWORD: preview
