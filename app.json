@@ -20,7 +20,10 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1E40AF"
       },
-      "package": "com.carbuyassistant.app"
+      "package": "com.carbuyassistant.app",
+      "permissions": [
+        "com.google.android.gms.permission.AD_ID"
+      ]
     },
     "plugins": [
       [
