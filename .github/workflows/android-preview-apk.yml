@@ -66,6 +66,13 @@ jobs:
       - name: Expo Prebuild
         run: npx expo prebuild --platform android --clean
 
+      # ── Disable new architecture (causes crashes with Expo SDK 51/54) ──
+      - name: Disable New Architecture
+        run: |
+          echo "🔧 Disabling new architecture for stability..."
+          sed -i 's/newArchEnabled=true/newArchEnabled=false/' android/gradle.properties
+          grep "newArchEnabled" android/gradle.properties || echo "newArchEnabled not found (default is false)"
+
       # ── Create preview keystore for preview signing ──
       - name: Create preview keystore
         run: |
