@@ -1,4 +1,4 @@
-name: Android Preview APK (Debug Build)
+name: Android Preview APK (Standalone)
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build-preview-apk:
-    name: Build Debug APK for Preview
+    name: Build Standalone APK for Preview
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -60,11 +60,26 @@ jobs:
       - name: Expo Prebuild
         run: npx expo prebuild --platform android --clean
 
-      # ── Build Debug APK ──
-      - name: Build Debug APK
+      # ── Create preview keystore for preview signing ──
+      - name: Create preview keystore
+        run: |
+          cd android/app
+          keytool -genkey -v -keystore preview.keystore -alias preview -keyalg RSA -keysize 2048 -validity 10000 -storepass preview -keypass preview -dname "CN=Preview,O=App,C=US"
+
+      # ── Configure preview signing ──
+      - name: Configure preview signing
+        env:
+          CM_KEYSTORE_PATH: android/app/preview.keystore
+          CM_KEYSTORE_PASSWORD: preview
+          CM_KEY_ALIAS: preview
+          CM_KEY_PASSWORD: preview
+        run: node scripts/configure-android-signing.js
+
+      # ── Build Release APK (includes JS bundle, no Metro needed) ──
+      - name: Build Standalone APK
         run: |
           cd android
-          ./gradlew assembleDebug \
+          ./gradlew assembleRelease \
             -PversionCode=${{ github.run_number }} \
             -PversionName=1.0.${{ github.run_number }}-preview
 
@@ -73,14 +88,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: preview-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 7
 
       # ── Success summary ──
       - name: Build Summary
         run: |
-          echo "✅ DEBUG APK BUILT SUCCESSFULLY!"
+          echo "✅ STANDALONE APK BUILT SUCCESSFULLY!"
           echo ""
           echo "📥 Download: Go to Actions tab → this run → Artifacts → 'preview-apk'"
           echo "📱 Install: Transfer APK to your Android phone → tap to install"
-          echo "⚠️  Note: Debug build — for testing only, not for Play Store"
+          echo "⚠️  Note: Preview build — for testing only, not for Play Store"
