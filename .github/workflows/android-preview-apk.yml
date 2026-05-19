@@ -16,6 +16,12 @@ jobs:
     name: Build Standalone APK for Preview
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # ── Environment variables available to ALL steps ──
+    env:
+      CM_KEYSTORE_PATH: preview.keystore
+      CM_KEYSTORE_PASSWORD: preview
+      CM_KEY_ALIAS: preview
+      CM_KEY_PASSWORD: preview
 
     steps:
       # ── Checkout code ──
@@ -68,11 +74,6 @@ jobs:
 
       # ── Configure preview signing ──
       - name: Configure preview signing
-        env:
-          CM_KEYSTORE_PATH: preview.keystore
-          CM_KEYSTORE_PASSWORD: preview
-          CM_KEY_ALIAS: preview
-          CM_KEY_PASSWORD: preview
         run: node scripts/configure-android-signing.js
 
       # ── Build Release APK (includes JS bundle, no Metro needed) ──
