@@ -79,9 +79,9 @@ const NHTSA_BASE_URL = 'https://vpic.nhtsa.dot.gov/api';
 async function getUserZipCode(): Promise<string> {
   try {
     const zip = await AsyncStorage.getItem(ZIP_STORAGE_KEY);
-    return zip && /^\d{5}(-\d{4})?$/.test(zip) ? zip : '28201';
+    return zip && /^\d{5}(-\d{4})?$/.test(zip) ? zip : '27605';
   } catch {
-    return '28201';
+    return '27605';
   }
 }
 
@@ -519,15 +519,15 @@ interface MetroArea {
 
 function getMetroArea(userLocation?: string): MetroArea {
   const defaultMetro: MetroArea = {
-    name: 'Charlotte, NC',
-    zip: '28201',
+    name: 'Raleigh, NC',
+    zip: '27605',
     dealers: [
-      { name: 'AutoMax Dealership', rating: 4.8, distance: 3.7, location: 'Charlotte, NC' },
-      { name: 'Premier Motors', rating: 4.5, distance: 5.1, location: 'Charlotte, NC' },
-      { name: 'City Auto Group', rating: 4.2, distance: 8.7, location: 'Matthews, NC' },
-      { name: 'Best Price Cars', rating: 4.9, distance: 12.4, location: 'Gastonia, NC' },
-      { name: 'National Auto Sales', rating: 4.0, distance: 15.2, location: 'Concord, NC' },
-      { name: 'Elite Motors', rating: 4.7, distance: 3.8, location: 'Charlotte, NC' },
+      { name: 'AutoMax Dealership', rating: 4.8, distance: 3.7, location: 'Raleigh, NC' },
+      { name: 'Premier Motors', rating: 4.5, distance: 5.1, location: 'Raleigh, NC' },
+      { name: 'City Auto Group', rating: 4.2, distance: 8.7, location: 'Cary, NC' },
+      { name: 'Best Price Cars', rating: 4.9, distance: 12.4, location: 'Durham, NC' },
+      { name: 'National Auto Sales', rating: 4.0, distance: 15.2, location: 'Apex, NC' },
+      { name: 'Elite Motors', rating: 4.7, distance: 3.8, location: 'Raleigh, NC' },
       { name: 'Value Auto Center', rating: 4.3, distance: 6.5, location: 'Huntersville, NC' },
       { name: 'Trusty Cars', rating: 4.6, distance: 9.1, location: 'Rock Hill, SC' }
     ]
