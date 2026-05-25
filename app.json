@@ -22,19 +22,10 @@
       },
       "package": "com.carbuyassistant.app",
       "permissions": [
-        "android.permission.ACCESS_NETWORK_STATE",
-        "com.google.android.gms.permission.AD_ID"
+        "android.permission.ACCESS_NETWORK_STATE"
       ]
     },
-    "plugins": [
-      [
-        "react-native-google-mobile-ads",
-        {
-          "androidAppId": "ca-app-pub-3229563514854040~6580362587",
-          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
-        }
-      ]
-    ],
+    "plugins": [],
     "web": {
       "favicon": "./assets/favicon.png"
     },
