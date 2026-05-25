@@ -12,25 +12,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { setSearchRadius, getSearchRadius } from '../store/locationStore';
+import { getSearchRadius } from '../store/locationStore';
 
 export default function SettingsScreen({ navigation }: any) {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [priceAlertsEnabled, setPriceAlertsEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
-  const [searchRadius, setSearchRadiusState] = useState(50);
-
-  useEffect(() => {
-    setSearchRadiusState(getSearchRadius());
-  }, []);
-
-  const radiusOptions = [10, 25, 50, 100, 250];
-
-  const handleRadiusChange = (radius: number) => {
-    setSearchRadiusState(radius);
-    setSearchRadius(radius);
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -91,21 +78,7 @@ export default function SettingsScreen({ navigation }: any) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Search Radius</Text>
-          <Text style={styles.radiusDescription}>Show cars within {searchRadius} miles</Text>
-          <View style={styles.radiusOptions}>
-            {radiusOptions.map((radius) => (
-              <TouchableOpacity
-                key={radius}
-                style={[styles.radiusButton, searchRadius === radius ? styles.radiusButtonActive : null]}
-                onPress={() => handleRadiusChange(radius)}
-              >
-                <Text style={[styles.radiusButtonText, searchRadius === radius ? styles.radiusButtonTextActive : null]}>
-                  {radius} mi
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+  
         </View>
 
         <View style={styles.section}>
@@ -163,12 +136,6 @@ const styles = StyleSheet.create({
   settingText: { flex: 1 },
   settingLabel: { fontSize: 16, color: '#1f2937' },
   settingDescription: { fontSize: 13, color: '#9ca3af', marginTop: 2 },
-  radiusDescription: { fontSize: 14, color: '#6b7280', paddingHorizontal: 16, marginBottom: 8 },
-  radiusOptions: { flexDirection: 'row', paddingHorizontal: 16, gap: 8 },
-  radiusButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: '#f3f4f6', borderWidth: 1, borderColor: '#e5e7eb' },
-  radiusButtonActive: { backgroundColor: '#3b82f6', borderColor: '#3b82f6' },
-  radiusButtonText: { fontSize: 14, color: '#4b5563' },
-  radiusButtonTextActive: { color: '#fff', fontWeight: '600' },
   menuItem: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', gap: 12 },
   menuText: { flex: 1, fontSize: 16, color: '#1f2937' },
   appInfo: { alignItems: 'center', paddingVertical: 32, paddingHorizontal: 16 },

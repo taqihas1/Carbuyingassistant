@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import os
+
+os.chdir('/Users/taqihasan/carbuyassistantgithub/Carbuyingassistant')
+
+with open('src/screens/CarSearchScreen.tsx', 'w') as f:
+    f.write(r'''import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -33,14 +38,14 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import AdBanner from '../components/AdBanner';
 import NativeAdCard from '../components/NativeAdCard';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<<RootStackParamList>;
 
 export default function CarSearchScreen() {
-  const navigation = useNavigation<NavigationProp>();
-  const [listings, setListings] = useState<CarListing[]>([]);
+  const navigation = useNavigation<<NavigationProp>();
+  const [listings, setListings] = useState<<CarListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [filters, setFilters] = useState<SearchFilters>({ sortBy: 'savings_desc' });
+  const [filters, setFilters] = useState<<SearchFilters>({ sortBy: 'savings_desc' });
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedMake, setSelectedMake] = useState<string | null>(null);
@@ -48,7 +53,7 @@ export default function CarSearchScreen() {
   const [selectedPriceRange, setSelectedPriceRange] = useState<{ label: string; min: number; max: number } | null>(null);
   const [selectedYearRange, setSelectedYearRange] = useState<{ label: string; min: number; max: number } | null>(null);
   const [selectedDaysOnMarket, setSelectedDaysOnMarket] = useState<{ label: string; days: number } | null>({ label: 'Last 4 Weeks', days: 28 });
-  const [selectedSearchRadius, setSelectedSearchRadius] = useState<number | null>(50);
+  const [selectedSearchRadius, setSelectedSearchRadius] = useState<number | null>(null);
   const [zipCode, setZipCode] = useState('');
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [userLocation, setUserLocation] = useState(getLocation());
@@ -968,3 +973,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+''')
+
+print('Done! CarSearchScreen.tsx completely rewritten with all fixes.')
