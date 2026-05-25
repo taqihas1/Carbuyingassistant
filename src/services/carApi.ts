@@ -60,6 +60,7 @@ export interface SearchFilters {
   condition?: 'new' | 'used' | 'cpo';
   location?: string;
   radius?: number;
+  maxDaysOnMarket?: number;
   sortBy?: 'price_asc' | 'price_desc' | 'mileage_asc' | 'year_desc' | 'savings_desc' | 'distance_asc';
 }
 
@@ -239,6 +240,10 @@ export async function searchCarListings(filters: SearchFilters): Promise<CarList
   }
   if (filters.condition) {
     listings = listings.filter(l => l.condition === filters.condition);
+  }
+
+  if (filters.maxDaysOnMarket) {
+    listings = listings.filter(l => l.daysOnMarket <= filters.maxDaysOnMarket!);
   }
   
   // Sort
