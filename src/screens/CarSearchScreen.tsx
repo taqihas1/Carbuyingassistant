@@ -24,6 +24,7 @@ import {
   FUEL_TYPES,
   PRICE_RANGES,
   YEAR_RANGES,
+  DAYS_ON_MARKET,
   analyzeDeal
 } from '../services/carApi';
 import { getCurrentLocation } from '../services/geolocation';
@@ -46,6 +47,8 @@ export default function CarSearchScreen() {
   const [selectedBodyType, setSelectedBodyType] = useState<string | null>(null);
   const [selectedPriceRange, setSelectedPriceRange] = useState<{ label: string; min: number; max: number } | null>(null);
   const [selectedYearRange, setSelectedYearRange] = useState<{ label: string; min: number; max: number } | null>(null);
+  const [selectedDaysOnMarket, setSelectedDaysOnMarket] = useState({ label: 'Last 4 Weeks', days: 28 });
+  const [selectedSearchRadius, setSelectedSearchRadius] = useState(userLocation.radius || 50);
   const [zipCode, setZipCode] = useState('');
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [userLocation, setUserLocation] = useState(getLocation());
@@ -72,7 +75,8 @@ export default function CarSearchScreen() {
         minYear: selectedYearRange?.min,
         maxYear: selectedYearRange?.max,
         location: zipCode || userLocation.zipCode,
-        radius: userLocation.radius,
+        radius: selectedSearchRadius || userLocation.radius,
+      maxDaysOnMarket: selectedDaysOnMarket?.days || 28,
       };
       
       if (searchQuery) {
@@ -245,6 +249,16 @@ export default function CarSearchScreen() {
           <Ionicons name="close" size={16} color="#fff" />
         </TouchableOpacity>
       )}
+      {selectedDaysOnMarket && selectedDaysOnMarket.days !== 9999 && (
+        <TouchableOpacity
+          style={[styles.filterChip, styles.activeChip]}
+          onPress={() => { setSelectedDaysOnMarket(null); loadListings(); }}
+        >
+          <Text style={styles.activeChipText}>{selectedDaysOnMarket.label}</Text>
+          <Ionicons name="close-circle" size={14} color="#fff" />
+        </TouchableOpacity>
+      )}
+
       {zipCode && (
         <TouchableOpacity
           style={[styles.filterChip, styles.activeChip]}
@@ -254,6 +268,16 @@ export default function CarSearchScreen() {
           <Text style={styles.activeChipText}>{zipCode}</Text>
           <Ionicons name="close" size={16} color="#fff" />
         </TouchableOpacity>
+
+      {selectedSearchRadius && (
+        <TouchableOpacity
+          style={[styles.filterChip, styles.activeChip]}
+          onPress={() => { setSelectedSearchRadius(null); loadListings(); }}
+        >
+          <Text style={styles.activeChipText}>{selectedSearchRadius} mi radius</Text>
+          <Ionicons name="close-circle" size={14} color="#fff" />
+        </TouchableOpacity>
+      )}
       )}
     </ScrollView>
   );
@@ -455,6 +479,60 @@ export default function CarSearchScreen() {
             ))}
           </View>
 
+
+        <Text style={styles.filterSectionTitle}>Days on Market</Text>
+        <View style={styles.filterGrid}>
+          {DAYS_ON_MARKET.map((range) => (
+            <TouchableOpacity
+              key={range.label}
+              style={[
+                styles.filterOption,
+                selectedDaysOnMarket?.label === range.label && styles.filterOptionActive,
+              ]}
+              onPress={() =>
+                setSelectedDaysOnMarket(
+                  selectedDaysOnMarket?.label === range.label ? null : range
+                )
+              }
+            >
+              <Text
+                style={[
+                  styles.filterOptionText,
+                  selectedDaysOnMarket?.label === range.label && styles.filterOptionTextActive,
+                ]}
+              >
+                {range.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={styles.filterSectionTitle}>Search Radius</Text>
+        <View style={styles.filterGrid}>
+          {[10, 25, 50, 100, 250].map((radius) => (
+            <TouchableOpacity
+              key={radius}
+              style={[
+                styles.filterOption,
+                selectedSearchRadius === radius && styles.filterOptionActive,
+              ]}
+              onPress={() =>
+                setSelectedSearchRadius(
+                  selectedSearchRadius === radius ? null : radius
+                )
+              }
+            >
+              <Text
+                style={[
+                  styles.filterOptionText,
+                  selectedSearchRadius === radius && styles.filterOptionTextActive,
+                ]}
+              >
+                {radius} mi
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
           <TouchableOpacity style={styles.applyButton} onPress={loadListings}>
             <Text style={styles.applyButtonText}>Apply Filters</Text>
           </TouchableOpacity>

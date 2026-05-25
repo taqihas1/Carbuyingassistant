@@ -998,3 +998,10 @@ export const YEAR_RANGES = [
   { label: '2018-2025', min: 2018, max: 2025 },
   { label: '2015+', min: 2015, max: 2025 }
 ];
+
+export const DAYS_ON_MARKET = [
+  { label: 'This Week', days: 7 },
+  { label: 'Last 2 Weeks', days: 14 },
+  { label: 'Last 4 Weeks', days: 28 },
+  { label: 'Any', days: 9999 },
+];
