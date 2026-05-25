@@ -91,7 +91,7 @@ export default function CarSearchScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [filters, selectedMake, selectedBodyType, selectedPriceRange, selectedYearRange, searchQuery, userLocation, zipCode]);
+  }, [filters, selectedMake, selectedBodyType, selectedPriceRange, selectedYearRange, selectedDaysOnMarket, selectedSearchRadius, searchQuery, userLocation, zipCode]);
 
   useEffect(() => {
   loadListings();
