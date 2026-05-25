@@ -433,7 +433,6 @@ async function generateRealisticListings(userLocation?: string): Promise<CarList
       horsepower: 150 + Math.floor(Math.random() * 350),
       features: generateFeatures(condition, price),
       dealerName: dealer.name,
-    dealerAddress: dealer.address || '',
       dealerRating: dealer.rating,
       dealerDistance: parseFloat(dealer.distance.toFixed(1)),
       location: dealer.location,
@@ -515,7 +514,7 @@ function generateLocation(): string {
 interface MetroArea {
   name: string;
   zip: string;
-  dealers: { name: string; rating: number; distance: number; location: string; address?: string }[];
+  dealers: { name: string; rating: number; distance: number; location: string }[];
 }
 
 function getMetroArea(userLocation?: string): MetroArea {
@@ -523,14 +522,14 @@ function getMetroArea(userLocation?: string): MetroArea {
     name: 'Charlotte, NC',
     zip: '28201',
     dealers: [
-      { name: 'AutoMax Dealership', rating: 4.8, distance: 3.7, location: 'Charlotte, NC', address: '5500 E Independence Blvd, Charlotte, NC 28212' },
-      { name: 'Premier Motors', rating: 4.5, distance: 5.1, location: 'Charlotte, NC', address: '9201 S Blvd, Charlotte, NC 28273' },
-      { name: 'City Auto Group', rating: 4.2, distance: 8.7, location: 'Matthews, NC', address: '13401 E Independence Blvd, Matthews, NC 28105' },
-      { name: 'Best Price Cars', rating: 4.9, distance: 12.4, location: 'Gastonia, NC', address: '1920 E Franklin Blvd, Gastonia, NC 28054' },
-      { name: 'National Auto Sales', rating: 4.0, distance: 15.2, location: 'Concord, NC', address: '3371 Cloverleaf Pkwy, Concord, NC 28027' },
-      { name: 'Elite Motors', rating: 4.7, distance: 3.8, location: 'Charlotte, NC', address: '9300 E Independence Blvd, Charlotte, NC 28273' },
-      { name: 'Value Auto Center', rating: 4.3, distance: 6.5, location: 'Huntersville, NC', address: '118 Statesville Rd, Huntersville, NC 28078' },
-      { name: 'Trusty Cars', rating: 4.6, distance: 9.1, location: 'Rock Hill, SC', address: '540 S Herlong Ave, Rock Hill, SC 29732' }
+      { name: 'AutoMax Dealership', rating: 4.8, distance: 3.7, location: 'Charlotte, NC' },
+      { name: 'Premier Motors', rating: 4.5, distance: 5.1, location: 'Charlotte, NC' },
+      { name: 'City Auto Group', rating: 4.2, distance: 8.7, location: 'Matthews, NC' },
+      { name: 'Best Price Cars', rating: 4.9, distance: 12.4, location: 'Gastonia, NC' },
+      { name: 'National Auto Sales', rating: 4.0, distance: 15.2, location: 'Concord, NC' },
+      { name: 'Elite Motors', rating: 4.7, distance: 3.8, location: 'Charlotte, NC' },
+      { name: 'Value Auto Center', rating: 4.3, distance: 6.5, location: 'Huntersville, NC' },
+      { name: 'Trusty Cars', rating: 4.6, distance: 9.1, location: 'Rock Hill, SC' }
     ]
   };
 
@@ -921,7 +920,6 @@ function transformMarketCheckToCarListing(raw: any): CarListing {
     horsepower: raw.horsepower || (150 + Math.floor(Math.random() * 200)),
     features: raw.features || ['Bluetooth', 'Backup Camera'],
     dealerName: raw.dealerName || 'Unknown Dealer',
-    dealerAddress: raw.dealerAddress || raw.address || '',
     dealerRating: raw.dealerRating || 4.5,
     dealerDistance: raw.dealerDistance || Math.random() * 20,
     location: raw.location || 'Unknown',
@@ -969,7 +967,6 @@ async function transformScrapedToCarListing(scraped: any): Promise<CarListing> {
     horsepower: 150 + Math.floor(Math.random() * 200),
     features: scraped.features || ['Bluetooth', 'Backup Camera'],
     dealerName: scraped.dealerName,
-    dealerAddress: scraped.dealerAddress || scraped.address || '',
     dealerRating: scraped.dealerRating || 4.5,
     dealerDistance: scraped.dealerDistance || Math.random() * 20,
     location: scraped.location || 'Unknown',

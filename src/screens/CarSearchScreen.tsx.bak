@@ -90,8 +90,8 @@ export default function CarSearchScreen() {
   }, [filters, selectedMake, selectedBodyType, selectedPriceRange, selectedYearRange, searchQuery, userLocation, zipCode]);
 
   useEffect(() => {
-  loadListings();
-}, []);
+    loadListings();
+  }, [loadListings]);
 
   const handleDetectLocation = async () => {
     setIsDetectingLocation(true);
@@ -472,7 +472,7 @@ export default function CarSearchScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
           <View style={styles.resultsHeader}>
-            <Text style={styles.resultsText}>{listings.length} car(s) found</Text>
+            <Text style={styles.resultsText}>{listings.length} cars found</Text>
             <TouchableOpacity
               style={styles.sortButton}
               onPress={() => {
